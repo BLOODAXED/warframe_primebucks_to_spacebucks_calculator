@@ -7,14 +7,16 @@ def getUrlAsJson(url)
 	return request_json
 end
 
+### Returns the sell orders with the smallest price in the first index
 def getSortedSellOrders(json)
 	sorted_sells = json["response"]["sell"].sort_by { |i| i["price"]}
 	return sorted_sells
 end
 
+### Returns buy orders with the largest price in the first index.
 def getSortedBuyOrders(json)
     sorted_buys = json["response"]["buy"].sort_by { |i| i["price"]}
-    return sorted_buys
+    return sorted_buys.reverse
 end
 
 def getHighBuyAndLowSell(array_of_buy, array_of_sell)    
@@ -38,7 +40,7 @@ end
 files           = ["sorted_sell.txt", "sorted_buy.txt", "best_ten.txt", "prices.txt"]
 request_as_json = getUrlAsJson("http://warframe.market/api/get_orders/Set/Akbronco%20Prime%20Set")
 sorted_sell     = getSortedSellOrders(request_as_json)
-sorted_buy      = getSortedSellOrders(request_as_json)
+sorted_buy      = getSortedBuyOrders(request_as_json)
 best_ten        = getHighBuyAndLowSell(sorted_buy, sorted_sell)
 prices          = justThePrices(best_ten)
 
