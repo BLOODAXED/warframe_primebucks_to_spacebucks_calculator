@@ -2,15 +2,15 @@ require "http"
 require "json"
 
 def getUrlAsJson(url)
-	requested_set_response = HTTP.get(url).to_s
-	request_json = JSON.parse(requested_set_response)
-	return request_json
+    requested_set_response = HTTP.get(url).to_s
+    request_json = JSON.parse(requested_set_response)
+    return request_json
 end
 
 ### Returns the sell orders with the smallest price in the first index
 def getSortedSellOrders(json)
-	sorted_sells = json["response"]["sell"].sort_by { |i| i["price"]}
-	return sorted_sells
+    sorted_sells = json["response"]["sell"].sort_by { |i| i["price"]}
+    return sorted_sells
 end
 
 ### Returns buy orders with the largest price in the first index.
@@ -19,7 +19,7 @@ def getSortedBuyOrders(json)
     return sorted_buys.reverse
 end
 
-def getHighBuyAndLowSell(array_of_buy, array_of_sell)    
+def getHighBuyAndLowSell(array_of_buy, array_of_sell)
     best_five = Array.new
     array_of_buy[0...5].each{ |a| best_five.push(a) }
     array_of_sell[0...5].each{ |b| best_five.push(b) }
