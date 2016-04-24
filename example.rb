@@ -63,6 +63,47 @@ def calculateStandardDevation(array_of_prices)
     return std_deviation
 end
 
+#given a hash with ["item_type"] and ["item_name"] constructs the warframe market url for the item
+def constructItemURL(item_details)
+    return "http://warframe.market/api/get_orders/#{item_details["item_type"]}/#{item_details["item_name"].gsub(/\s/,"%20")}"
+end
+
+# gets input from the user and locates a matching item if one exists.  If such an item doesn't exist,
+# try to display options to the user that correspond with the string given by the user.
+# returns the item's url.  May return nil/empty string if user cancels process early
+def getItemFromUser()
+    current_partial_item = ""
+    list_of_all_items = getItemListFromMarketWebsite().sort_by { |i| i["item_name"]}
+    array_to_display_to_user = Array.new
+    matching_item = nil
+
+    while(true)
+        ## if current_partial_item is a perfect match, we are done
+        if(matching_item = list_of_all_items.detect{|item| item["item_name"] == current_partial_item})
+            puts "found a perfect match"
+            break
+        ## else check if current_partial_item is "", if so prompt user for brand new input
+        elsif(current_partial_item == "")
+            print "Please enter an item name or partial item name: "
+            current_partial_item = gets.chomp
+        ## else current_partial_item is something from the user and I need to try and present them with some options
+        else
+            puts "Currently haven't implemented partial matching"
+            #Ask user for input, at least the first 3 letters of an item
+            #Populate with the first 6? results that match those letters at the start of their name
+            #If user inputs a certain special input return nil to exit the subroutine
+            break
+        end
+    end
+
+    users_item_url = constructItemURL(matching_item)
+    puts users_item_url
+end
+
+def getItemListFromMarketWebsite()
+    return getUrlAsJson("http://warframe.market/api/get_all_items_v2")
+end
+
 files           = ["sorted_sell.txt", "sorted_buy.txt", "best_ten.txt", "prices.txt"]
 request_as_json = getUrlAsJson("http://warframe.market/api/get_orders/Set/Akbronco%20Prime%20Set")
 sorted_sell     = getSortedSellOrders(request_as_json)
@@ -80,9 +121,5 @@ makeFile(files[3], prices)
 puts "create files:"
 puts files
 
-# puts "sell"
-# puts sorted_sell
-# puts "buy"
-# puts sorted_buy
-# puts "best 10"
-# puts best_ten
+puts "testing user input section"
+getItemFromUser()
